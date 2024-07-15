@@ -22,8 +22,30 @@ public class main
         logger = event.getModLog();
     }
 
-    @EventHandler
-    public void init(FMLInitializationEvent event)
-    {
+    public static void setSession(Session s) {
+        Class<? extends Minecraft> mc = Minecraft.getMinecraft().getClass();
+
+        try {
+            Field session = null;
+
+            for (Field f : mc.getDeclaredFields()) {
+                if (f.getType().isInstance(s)) {
+                    session = f;
+                }
+            }
+
+            if (session == null) {
+                throw new IllegalStateException("Session Null");
+            }
+
+            session.setAccessible(true);
+            session.set(Minecraft.getMinecraft(), s);
+            session.setAccessible(false);
+
+            Client.name = "Copernicium 1.12.2 | User: " + Minecraft.getMinecraft().getSession().getUsername();
+            Display.setTitle(Client.name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
